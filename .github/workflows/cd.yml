@@ -26,11 +26,7 @@ jobs:
     
     - name: Create deployment package
       run: |
-        pip install \
-          --platform manylinux2014_x86_64 \
-          --target ./package \
-          --only-binary=:all: \
-          -r requirements.txt
+        mkdir package
         cp main.py flight_agent.py itinerary_agent.py travel_llm.py ./package/
         cd package
         zip -r ../lambda_deployment.zip .
