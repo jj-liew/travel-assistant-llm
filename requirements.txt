@@ -1,0 +1,8 @@
+amadeus
+fastapi
+pydantic
+uvicorn
+openai
+python-dotenv
+pinecone
+mangum
