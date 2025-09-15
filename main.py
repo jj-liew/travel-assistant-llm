@@ -1,6 +1,5 @@
-import os
 import time
-from collections import defaultdict 
+from collections import defaultdict
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, status, Request
 from pydantic import BaseModel
@@ -20,29 +19,28 @@ request_counts = defaultdict(list)
 def rate_limit(request: Request):
     """
     Simple rate limiter: 20 requests per 5 minutes per IP.
-    
+
     Args:
         request: FastAPI Request object
-        
+
     Raises:
         HTTPException: If rate limit exceeded (429 Too Many Requests)
     """
     client_ip = request.client.host
     now = time.time()
-    
+
     # Remove old requests (older than 5 minutes)
     request_counts[client_ip] = [
-        req_time for req_time in request_counts[client_ip] 
-        if now - req_time < 300
+        req_time for req_time in request_counts[client_ip] if now - req_time < 300
     ]
-    
+
     # Check if over limit (10 requests per 5 minutes)
     if len(request_counts[client_ip]) >= 20:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Rate limit: 20 requests per 5 minutes. Please wait.",
         )
-    
+
     request_counts[client_ip].append(now)
 
 
