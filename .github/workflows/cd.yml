@@ -38,6 +38,9 @@ jobs:
           --function-name travel_assistant \
           --zip-file fileb://lambda_deployment.zip
     
+    - name: Wait until function is updated
+      run: aws lambda wait function-updated --function-name travel_assistant
+    
     - name: Update Lambda function configuration
       run: |
         aws lambda update-function-configuration \
