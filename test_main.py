@@ -2,6 +2,14 @@ import unittest
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 
+system_prompt = """
+You are a travel planning assistant. 
+You ONLY answer questions related to flights, travel itineraries, or trip planning. 
+If the user asks something outside of this domain, politely respond with:
+"I'm only able to help with travel itineraries and flights."
+"""
+format = "Always return the response in simple plaintext, no tables."
+
 
 class TestAPI(unittest.TestCase):
     """Tests for FastAPI endpoints with API key authentication."""
@@ -12,43 +20,11 @@ class TestAPI(unittest.TestCase):
 
         self.client = TestClient(app)
 
-    @patch("main.search_flights")
-    def test_search_flights_endpoint(self, mock_search):
-        """Test flight search endpoint."""
-        mock_search.return_value = [{"price": "100.00"}]
-
-        resp = self.client.post(
-            "/search-flights",
-            json={
-                "origin": "SFO",
-                "destination": "LAX",
-                "date": "2025-10-10",
-                "adults": 1,
-            },
-        )
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), [{"price": "100.00"}])
-        mock_search.assert_called_once_with(
-            origin="SFO", destination="LAX", date="2025-10-10", adults=1
-        )
-
-    @patch("main.query_city")
-    def test_query_city_endpoint(self, mock_query):
-        """Test city query endpoint."""
-        mock_query.return_value = "City answer"
-        resp = self.client.post(
-            "/query-city",
-            json={"city": "paris", "question": "what to do?"},
-        )
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), "City answer")
-        mock_query.assert_called_once_with("paris", "what to do?")
-
     @patch("main.run_travel_llm")
     def test_ask_endpoint(self, mock_ask):
         """Test ask endpoint."""
         mock_ask.return_value = "LLM answer"
         resp = self.client.post("/ask", json={"prompt": "hi"})
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), "LLM answer")
-        mock_ask.assert_called_once_with("hi")
+        self.assertEqual(resp.text, "LLM answer")
+        mock_ask.assert_called_once_with("hi" + system_prompt + format)

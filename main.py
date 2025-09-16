@@ -2,9 +2,8 @@ import time
 from collections import defaultdict
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
-from flight_agent import search_flights
-from itinerary_agent import query_city
 from travel_llm import run_travel_llm
 from mangum import Mangum
 
@@ -14,6 +13,13 @@ app = FastAPI(title="Travel Assistant API")
 
 
 request_counts = defaultdict(list)
+system_prompt = """
+You are a travel planning assistant. 
+You ONLY answer questions related to flights, travel itineraries, or trip planning. 
+If the user asks something outside of this domain, politely respond with:
+"I'm only able to help with travel itineraries and flights."
+"""
+format = "Always return the response in simple plaintext, no tables."
 
 
 def rate_limit(request: Request):
@@ -44,47 +50,17 @@ def rate_limit(request: Request):
     request_counts[client_ip].append(now)
 
 
-class FlightRequest(BaseModel):
-    """Schema for flight search requests via the API."""
-
-    origin: str
-    destination: str
-    date: str
-    adults: int = 1
-
-
-class ItineraryRequest(BaseModel):
-    """Schema for city itinerary questions via the API."""
-
-    city: str
-    question: str
-
-
 class LLMRequest(BaseModel):
     """Schema for general LLM queries via the API."""
 
     prompt: str
 
 
-# Endpoints
-@app.post("/search-flights", dependencies=[Depends(rate_limit)])
-def api_search_flights(req: FlightRequest):
-    """Endpoint: search for flights using Amadeus wrapper."""
-    return search_flights(
-        origin=req.origin, destination=req.destination, date=req.date, adults=req.adults
-    )
-
-
-@app.post("/query-city", dependencies=[Depends(rate_limit)])
-def api_query_city(req: ItineraryRequest):
-    """Endpoint: answer a city-related question using Pinecone + LLM."""
-    return query_city(req.city, req.question)
-
-
-@app.post("/ask", dependencies=[Depends(rate_limit)])
+# Endpoint
+@app.post("/ask", response_class=PlainTextResponse, dependencies=[Depends(rate_limit)])
 def api_ask(req: LLMRequest):
     """Endpoint: free-form question answered by the LLM with tools."""
-    return run_travel_llm(req.prompt)
+    return run_travel_llm(req.prompt + system_prompt + format)
 
 
 handler = Mangum(app)
