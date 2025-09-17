@@ -58,8 +58,19 @@ class LLMRequest(BaseModel):
 
 # Endpoint
 @app.post("/ask", response_class=PlainTextResponse, dependencies=[Depends(rate_limit)])
-def api_ask(req: LLMRequest):
-    """Endpoint: free-form question answered by the LLM with tools."""
+def ask_travel_assistant(req: LLMRequest):
+    """
+    Endpoint: Free-form natural language assistant powered by the agentic LLM.
+
+    This endpoint provides a general-purpose query interface where users can
+    ask open-ended travel-related questions. The request payload must contain
+    a prompt string, which is passed to the travel assistant LLM. The LLM may
+    leverage connected tools (e.g., flight search, itinerary lookup) to
+    generate a contextual, helpful response.
+
+    Request Body:
+        prompt (str): A travel-related natural language question or instruction.
+    """
     return run_travel_llm(req.prompt + system_prompt + format)
 
 
