@@ -4,7 +4,7 @@ A travel planning API that combines Large Language Models (LLMs) with **real-tim
 The project uses Retrieval-Augmented Generation (RAG) to improve trip planning answers. Instead of relying only on the LLM’s built-in knowledge, RAG retrieves up-to-date city and travel information (e.g., attractions, culture, safety, logistics) from an external vector database Pinecone before passing it to the model. This ensures that the responses are more accurate, context-aware, and grounded in real data.
 
 ## Project Scope
-This project focuses primarily on demonstrating the **architecture, agentic workflow design, and serverless deployment pipeline** rather than providing a production-ready travel assistant. The use case is illustrative, but the codebase structure can be adapted to other domains.
+This project focuses primarily on demonstrating the **architecture, agentic workflow design, and serverless deployment pipeline** rather than providing a production-ready travel assistant. This project is ideal if you want to experiment with agentic workflows and serverless LLM applications. The use case is illustrative, but the codebase structure can be adapted to other domains. 
 
 ## Feature
 - **Flight Search**: Search for real-time flight offers using the Amadeus API.
@@ -12,8 +12,8 @@ This project focuses primarily on demonstrating the **architecture, agentic work
 - **LLM-Powered Assistant**: Combines results from both agents intelligently with a Groq-hosted LLM.
 - **Serverless Deployment**: Runs on AWS Lambda + Function URL.
 
-## Live API Endpoint
-This project is deployed on AWS Lambda with a Function URL. The travel assistant LLM can be accessed directly with two different methods:
+## Live AWS API Endpoint
+This project is deployed on AWS Lambda with a Function URL so it can be tested directly. The travel assistant LLM can be accessed directly with two different methods:
 > [!IMPORTANT]
 > The API has a rate limit of 20 requests per 5 minutes per IP.
 ### 1. Swagger UI
@@ -43,7 +43,8 @@ curl -X 'POST' \
 }' 
 ```
 
-### Prompt ideas:
+### Prompt ideas
+Sample queries you can paste directly into the Swagger UI or curl.
 ```
 - "Find me the some flights from New York (JFK) to London (LHR) on December 15, 2025 for 2 adults."
 - "Create a 5-day trip plan in Tokyo during cherry blossom season."
@@ -65,6 +66,7 @@ curl -X 'POST' \
 <img width="866" height="268" alt="image-3" src="https://github.com/user-attachments/assets/c5475e92-ae4b-4d52-9f39-44a3c7783dae" />
 
 ## Installation
+Follow these steps if you want to run it locally instead of using the live endpoint.
 ### 1. Clone the repo
 ```sh
 git clone https://github.com/jj-liew/travel-assistant-llm.git
