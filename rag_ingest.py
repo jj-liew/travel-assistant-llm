@@ -85,7 +85,3 @@ def embed_db(city):
 
     except Exception as error:
         return {"error": str(error)}
-
-
-result = embed_db("Taipei")
-print(result)
