@@ -57,6 +57,18 @@ Sample queries you can paste directly into the Swagger UI or curl.
 > - **Request scope**: Each API request can only query **one flight search at a time**.  
 > - **Trip planning**: Unlike flight search, **different trip planning requests can be queried multiple times** in a single query.
 
+### Supported cities data
+Currently, the Pinecone knowledge index from the Live AWS endpoint includes the following cities. Querying these cities that are already available in Pinecone will yield the best in-context results.  
+- Bangkok
+- Hong Kong
+- Kuala Lumpur
+- Kyoto
+- Melbourne
+- Osaka
+- Seoul
+- Sydney
+- Taipei
+- Tokyo
 
 ### Example results
 #### Flight Search
@@ -96,6 +108,23 @@ uvicorn app:app --reload
 ```
 After starting the server, access the endpoint via
 `http://127.0.0.1:8000/docs` with Swagger UI.
+
+### 5. Data Ingestion (Optional)
+By default, Pinecone does not contain city information. You can add cities yourself by running the `embed_db(city)` function to scrape data from **Wikivoyage** and ingest it into your Pinecone.
+
+Example usage:
+```
+from rag_ingest import embed_db
+
+# Ingest Tokyo data into Pinecone
+result = embed_db("Tokyo")
+print(result)
+# Output: {"status": "success", "message": "Successfully embedded 42 chunks for Tokyo"}
+```
+You can repeat this process for any city listed on [Wikivoyage](https://en.wikivoyage.org/wiki/Category:Cities_with_categories). 
+> [!NOTE]  
+> For cities with more than one word, replace spaces with underscores `_`.  
+> Example: `embed_db("Kuala_Lumpur")` 
 
 ### Testing
 Use the `pytest` command to run the test files.
